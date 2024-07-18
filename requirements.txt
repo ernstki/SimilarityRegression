@@ -1,0 +1,9 @@
+notebook
+numpy
+pandas
+# Biopython 1.77 requires Python 3.6, and dumped support for 2.7
+# (so much for SemVer)
+biopython==1.76
+sklearn
+# https://github.com/kynan/nbstripout?tab=readme-ov-file#python-3-only
+nbstripout==0.3.10

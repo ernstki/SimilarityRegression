@@ -1,6 +1,9 @@
+#!/usr/bin/env python2
 import sys
 import os
 import glob
+import argparse
+import subprocess
 
 #Functions
 def ReadMatches(filename):
@@ -75,23 +78,38 @@ def HMM2MaxP(filename):
 	return(hmm_len)
 
 #ARGS
-HMM = sys.argv[1]
-SEQS = sys.argv[2]
-ALNTYPE = sys.argv[3]
+parser = argparse.ArgumentParser(description='Find R/aphid matches for given '
+                                             'HMM and FASTA sequences')
+parser.add_argument('HMM', help='HMM file')
+parser.add_argument('SEQS', help='FASTA sequences')
+parser.add_argument('ALNTYPE', help='alignment type',
+                    choices=['local', 'global', 'semiglobal'])
+parser.add_argument('OUTPATH', help='output directory name',
+                    default='DBDMatchPos_aphid')
+opts = parser.parse_args()
 
 #PrepOutput
-loc_Output = 'DBDMatchPos_aphid/'
-if os.path.isdir(loc_Output) == False:
-    os.mkdir(loc_Output)
+if not os.path.isdir(opts.OUTPATH):
+    os.mkdir(opts.OUTPATH)
 
-loc_RootName = loc_Output + SEQS.split('/')[-1].replace('.fa','')
+loc_RootName = os.path.join(
+    opts.OUTPATH,
+    opts.SEQS.split('/')[-1].replace('.fa','')
+)
 #print loc_RootName
     
 #1) Run R/Aphid Matches
-os.system('Rscript RunAPHID.R %s %s %s %s'%(HMM, SEQS, ALNTYPE, loc_RootName)) 
+subprocess.check_call([
+    'Rscript',
+    os.path.join(os.path.dirname(__file__), 'RunAPHID.R'),
+    opts.HMM,
+    opts.SEQS,
+    opts.ALNTYPE,
+    loc_RootName
+]) 
 
 #2) Parse Results
-hmm_len = HMM2MaxP(HMM)
+hmm_len = HMM2MaxP(opts.HMM)
 for aphidresultfile in glob.glob(loc_RootName + '*Viterbi*'):
     newname = aphidresultfile.replace('Viterbi', 'matchpos') + '.fa'
     #print aphidresultfile, newname
