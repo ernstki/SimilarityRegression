@@ -35,12 +35,14 @@ def ParseStockholmWithMatches(fileloc):
             matchcount += 1
             PFamPos[i] = matchcount
     gPos = [i for i, v in enumerate(PFamPos) if v == '.']
-    gPos = [map(itemgetter(1), g) for k, g in itertools.groupby(enumerate(gPos), lambda (i,x):i-x)]
+    gPos = [list(map(itemgetter(1), g))
+            for k, g in itertools.groupby(enumerate(gPos),
+                                          lambda i_x: i_x[0]-i_x[1])]
     for l in gPos:
-        name = 'GAP:'+ str(PFamPos[l[0]-1]) + '-'  + str(PFamPos[l[-1]+1])
+        name = 'GAP:' + str(PFamPos[l[0]-1]) + '-' + str(PFamPos[l[-1]+1])
         for i in l:
             PFamPos[i] = name
-    return(aln, matchpos, RF, PFamPos)
+    return aln, matchpos, RF, PFamPos
 
         
 def RFGapIntervals(RF, matchval = 'x'):
@@ -56,4 +58,4 @@ def RFGapIntervals(RF, matchval = 'x'):
         if (i == (len(RF)-1)) and (len(CurrentI) == 1):
             CurrentI.append(i + 1)
             gaps.append(tuple(CurrentI))
-    return(gaps)
+    return gaps

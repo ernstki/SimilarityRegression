@@ -1,5 +1,7 @@
 # editor and file manager detritus
 .*.sw?
+.idea
+.vscode
 *~
 .DS_Store
 Thumbs.db
@@ -7,6 +9,7 @@ Untitled.ipynb
 
 # virtual environments
 renv
+.Rprofile
 venv
 
 # files from the example

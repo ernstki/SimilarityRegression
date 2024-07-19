@@ -1,0 +1,6 @@
+# this is buster, 10.13, which is no longer getting support
+#FROM python:2.7-slim
+FROM debian:bullseye-slim
+RUN apt update && apt upgrade -y
+RUN apt install -y r-base python2
+CMD /bin/bash

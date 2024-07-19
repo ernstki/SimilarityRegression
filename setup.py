@@ -37,6 +37,7 @@ setup(
     # you can use, e.g., 'pip list | grep -i pandas' to see the current version
     # ref: https://setuptools.readthedocs.io/en/latest/setuptools.html#declaring-dependencies
     #install_requires=["pandas~=0.20"],
+    install_requires=read('requirements.txt'),
 
     # use this option if, for example, your package requires non-Python code
     # files to function, and you want to keep those alongside the code

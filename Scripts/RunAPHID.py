@@ -17,10 +17,10 @@ def ReadMatches(filename):
             s_pfam, s_seq, path = m.split('|')
             s_pfam = int(s_pfam)
             s_seq = int(s_seq)
-            path = map(int, path.split(','))
-            #PackDict 
+            path = list(map(int, path.split(',')))
+            #PackDict
             matches[seq] = (s_pfam, s_seq, path)
-    return(matches)
+    return matches
 
 def ParseMatches(matchdict, maxP):
     matchpos = {}
@@ -32,7 +32,7 @@ def ParseMatches(matchdict, maxP):
         #Find the first non-deletion (0) position in the path for sequence
         foundNonZero = False
         i = 0
-        while foundNonZero == False:
+        while not foundNonZero:
             if path[i] != 0:
                 path_seq[i] = s_seq
                 foundNonZero = True
@@ -47,7 +47,7 @@ def ParseMatches(matchdict, maxP):
         #Find the first non-insert (2) position in the path for Pfam
         foundNonInsert = False
         i = 0
-        while foundNonInsert == False:
+        while not foundNonInsert:
             if path[i] != 2:
                 path_pfam[i] = s_pfam
                 foundNonInsert = True
@@ -67,15 +67,15 @@ def ParseMatches(matchdict, maxP):
             if p_pfam != None and p_seq != None:
                 matches[p_pfam - 1] = seq[p_seq - 1]
         matchpos[seq] = ''.join(matches)
-    return(matchpos)
+    return matchpos
 
 def HMM2MaxP(filename):
-	with open(filename, 'r') as hmm:
-		for line in hmm:
-			line = line.strip().split()
-			if line[0] == 'LENG':
-				hmm_len = int(line[1])
-	return(hmm_len)
+    with open(filename, 'r') as hmm:
+        for line in hmm:
+            line = line.strip().split()
+            if line[0] == 'LENG':
+                hmm_len = int(line[1])
+    return hmm_len
 
 #ARGS
 parser = argparse.ArgumentParser(description='Find R/aphid matches for given '
@@ -97,7 +97,7 @@ loc_RootName = os.path.join(
     opts.SEQS.split('/')[-1].replace('.fa','')
 )
 #print loc_RootName
-    
+
 #1) Run R/Aphid Matches
 subprocess.check_call([
     'Rscript',
@@ -106,7 +106,7 @@ subprocess.check_call([
     opts.SEQS,
     opts.ALNTYPE,
     loc_RootName
-]) 
+])
 
 #2) Parse Results
 hmm_len = HMM2MaxP(opts.HMM)
@@ -115,5 +115,5 @@ for aphidresultfile in glob.glob(loc_RootName + '*Viterbi*'):
     #print aphidresultfile, newname
     aphid_matchpos = ParseMatches(ReadMatches(aphidresultfile), hmm_len)
     with open(newname, 'w') as outf:
-    	for seq, matchpos in aphid_matchpos.items():
-    		outf.write('>' + seq + '\n' + matchpos + '\n')
+        for seq, matchpos in aphid_matchpos.items():
+            outf.write('>' + seq + '\n' + matchpos + '\n')

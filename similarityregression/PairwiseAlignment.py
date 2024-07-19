@@ -4,7 +4,7 @@ def ReturnBlossum62Dict():
     for p, v in blosum62.items():
         subMat[p] = v
         subMat[p[::-1]] = v
-    return(subMat)
+    return subMat
 
 def Blossum62Score(pair, mat):
     try:
@@ -31,9 +31,10 @@ def AlnmtPctID(aln_x, aln_y):
         PctMatch = 0
     else:
         PctMatch = match/float(total)
-    return(float(match), PctMatch)
+    return float(match), PctMatch
 
-def PercentIdentityVect(aln_l, aln_s, Norm = 'L', SmoothingWindow_3 = False, subMat = ReturnBlossum62Dict()):
+def PercentIdentityVect(aln_l, aln_s, Norm = 'L', SmoothingWindow_3 = False,
+                        subMat = ReturnBlossum62Dict()):
     DBDAlignmentLength = len(aln_l[0])
     numsegments = float(len(aln_l))
     if Norm == 'S':
@@ -55,7 +56,7 @@ def PercentIdentityVect(aln_l, aln_s, Norm = 'L', SmoothingWindow_3 = False, sub
             seg_L = aln_l[i]
             seg_S = aln_s[i]
             
-            if (set(seg_L) == set(['-'])) or (set(seg_S) == set(['-'])):
+            if (set(seg_L) == {'-'}) or (set(seg_S) == {'-'}):
                 continue
                 
             pos = 0
@@ -113,7 +114,7 @@ def PercentIdentityVect(aln_l, aln_s, Norm = 'L', SmoothingWindow_3 = False, sub
             
             #Skip the %ID if one alignment is all gaps
             #This would add spurious hits with gap == gaps -> 1
-            if (set(seg_L) == set(['-'])) or (set(seg_S) == set(['-'])):
+            if (set(seg_L) == {'-'}) or (set(seg_S) == {'-'}):
                 continue
 
             pos = 0
@@ -134,13 +135,13 @@ def PercentIdentityVect(aln_l, aln_s, Norm = 'L', SmoothingWindow_3 = False, sub
     AAAvgScoreVect = AAAvgScoreVect/numsegments
     
     #Return the resulting P%ID vectors 
-    return(AAPercIdentityVect.tolist(), AAAvgScoreVect.tolist()) # Deimplemented: AAMaxScoreVect
+    return AAPercIdentityVect.tolist(), AAAvgScoreVect.tolist()  # Deimplemented: AAMaxScoreVect
 
 def ReturnLongerThenShorterArray(x, y):
     if len(x[1]) > len(y[1]):
-        return(x, y)
+        return x, y
     else:
-        return(y, x)
+        return y, x
 
 def AlignDBDArrays(i_x, i_y, ByPosNorm = 'L'):
     # 1) Find the longer array
@@ -203,7 +204,7 @@ def AlignDBDArrays(i_x, i_y, ByPosNorm = 'L'):
     o['ByPos.PctID'], o['ByPos.AvgB62'] = PercentIdentityVect(L_Array, S_BestAln, Norm = ByPosNorm, SmoothingWindow_3 = False)
     o['ByPos.PctID.Smooth3'], o['ByPos.AvgB62.Smooth3'] = PercentIdentityVect(L_Array, S_BestAln, Norm = ByPosNorm, SmoothingWindow_3 = True)
     
-    return(o)
+    return o
 
 def CalculateGapFeatures(L, S_in, iOffset, norm = 'L'):
     #Create Gap alignment based on matchpos offset
@@ -215,7 +216,8 @@ def CalculateGapFeatures(L, S_in, iOffset, norm = 'L'):
             S[iOffset + i] = val
     
     NumGaps = len(L[0].split('|'))
-    
+
+    import numpy as np
     ID_Identical = np.zeros(NumGaps)
     ID_HaveGap = np.zeros(NumGaps)  #Both have or both don't have
     ID_LenDiff = np.zeros(NumGaps) #Differences are negative
@@ -256,4 +258,4 @@ def CalculateGapFeatures(L, S_in, iOffset, norm = 'L'):
     ID_HaveGap = ID_HaveGap/divisor
     ID_LenDiff = ID_LenDiff/divisor
     
-    return(list(ID_Identical), list(ID_HaveGap), list(ID_LenDiff))
+    return list(ID_Identical), list(ID_HaveGap), list(ID_LenDiff)
