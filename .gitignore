@@ -8,7 +8,10 @@ Thumbs.db
 Untitled.ipynb
 
 # virtual environments
-renv
+renv/**
+!renv
+!renv/settings.json
+!renv/activate.R
 .Rprofile
 venv
 
